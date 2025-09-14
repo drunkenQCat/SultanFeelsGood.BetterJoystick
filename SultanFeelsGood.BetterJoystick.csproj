@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <AssemblyName>SultanFeelsGood.BetterJoystick</AssemblyName>
+    <Product>SultanFeelsGood.BetterJoystick</Product>
+    <Version>0.0.1</Version>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <LangVersion>latest</LangVersion>
+    <RestoreAdditionalProjectSources>
+      https://api.nuget.org/v3/index.json;
+      https://nuget.bepinex.dev/v3/index.json;
+      https://nuget.samboy.dev/v3/index.json
+    </RestoreAdditionalProjectSources>
+    <RootNamespace>SultanFeelsGood.BetterJoystick</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BepInEx.Unity.IL2CPP" Version="6.0.0-be.*" IncludeAssets="compile" />
+    <PackageReference Include="BepInEx.PluginInfoProps" Version="2.*" />
+    <PackageReference Include="Sultan-sGame.GameLibs" Version="1.0.3" />
+  </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="echo Copying DLL to BepInEx plugins directory..." />
+    <Exec Command="if not exist &quot;C:\_SataVolumeA\SteamLibrary\steamapps\common\Sultan's Game\BepInEx\plugins&quot; mkdir &quot;C:\_SataVolumeA\SteamLibrary\steamapps\common\Sultan's Game\BepInEx\plugins&quot;" />
+    <Exec Command="copy /Y &quot;$(TargetPath)&quot; &quot;C:\_SataVolumeA\SteamLibrary\steamapps\common\Sultan's Game\BepInEx\plugins\&quot;" />
+    <Exec Command="echo DLL copied successfully!" />
+  </Target>
+</Project>
