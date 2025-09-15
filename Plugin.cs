@@ -4,10 +4,12 @@ using BepInEx.Logging;
 using BepInEx.Unity.IL2CPP;
 using Il2CppInterop.Runtime.Attributes;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.InputSystem;
 
 using SultanFeelsGood.BetterJoystick.Attributes;
 using SultanFeelsGood.BetterJoystick.Window;
+using SultanFeelsGood.BetterJoystick.Keybinding;
 
 
 namespace SultanFeelsGood.BetterJoystick;
@@ -36,6 +38,7 @@ public class ExamplePlugin : BasePlugin
         private float _timer = 0f;
         private bool _windowShown = false;
         private bool _shouldQuit = false;
+        private bool _keybindingExported = false;
         GameController gameController = GameController.Inst;
 
 
@@ -108,11 +111,35 @@ public class ExamplePlugin : BasePlugin
             // }
 
             // 检测F2键按下
+            var currentSceneName = SceneManager.GetActiveScene().name;
+            var isInitOver = currentSceneName != "InitScene";
+
             if (Keyboard.current != null && Keyboard.current.f2Key.wasPressedThisFrame)
             {
+                if (!isInitOver)
+                {
+                    Log.LogWarning("Init is not over! Don't press F2 again.");
+                    return;
+                }
                 Log.LogInfo("F2 pushed - Toggling window from " + TestWindow.Enabled + " to " + !TestWindow.Enabled);
                 TestWindow.Enabled = !TestWindow.Enabled;
                 _windowShown = !_windowShown;
+            }
+            if (currentSceneName == "GameScene" && !_keybindingExported && !KeybindingManager.DefaultBindingsExists())
+            {
+                Log.LogInfo("Dump Start");
+                var buttonObject = GameObject.Find("Sort");
+                if (buttonObject == null)
+                {
+                    Log.LogError("Sort not found!");
+                    return;
+                    // 键位导出功能
+                }
+                ButtonActionBinder binder = buttonObject.GetComponent<ButtonActionBinder>();
+                Log.LogInfo(binder.Action.asset);
+                _keybindingExported = true;
+                ButtonActionDumper dumper = new();
+                dumper.Run();
             }
         }
 
